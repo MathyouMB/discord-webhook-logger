@@ -1,4 +1,5 @@
 import { defaultFormatter } from "../lib/formatters";
+const markdownCodeBlock = "```";
 
 describe("defaultFormatter", () => {
   it("will format the message with the given level and message", () => {
@@ -10,7 +11,9 @@ describe("defaultFormatter", () => {
     const message = "This is a test message";
     const formattedMessage = defaultFormatter(level, message);
     const timestamp = new Date().toISOString().replace("T", " ").split(".")[0];
-    expect(formattedMessage).toBe(`${timestamp} [INFO] This is a test message`);
+    expect(formattedMessage).toBe(
+      `${markdownCodeBlock}${timestamp} [INFO] This is a test message${markdownCodeBlock}`,
+    );
   });
 
   it("will handle empty message", () => {
@@ -22,6 +25,8 @@ describe("defaultFormatter", () => {
     const message = "";
     const formattedMessage = defaultFormatter(level, message);
     const timestamp = new Date().toISOString().replace("T", " ").split(".")[0];
-    expect(formattedMessage).toBe(`${timestamp} [ERROR] `);
+    expect(formattedMessage).toBe(
+      `${markdownCodeBlock}${timestamp} [ERROR] ${markdownCodeBlock}`,
+    );
   });
 });
