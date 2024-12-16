@@ -2,7 +2,7 @@ import { customFormatter } from "../../src/examples/custom-formatter";
 import { FormatterInput } from "../../src/lib/formatters";
 
 describe("customFormatter", () => {
-  it("should format info level message correctly", () => {
+  it("will format info level message correctly", () => {
     const input: FormatterInput = {
       level: "info",
       message: "This is an info message",
@@ -20,7 +20,7 @@ describe("customFormatter", () => {
     expect(result).toBe(expected);
   });
 
-  it("should format warn level message correctly", () => {
+  it("will format warn level message correctly", () => {
     const input: FormatterInput = {
       level: "warn",
       message: "This is a warning message",
@@ -38,7 +38,7 @@ describe("customFormatter", () => {
     expect(result).toBe(expected);
   });
 
-  it("should format error level message correctly", () => {
+  it("will format error level message correctly", () => {
     const input: FormatterInput = {
       level: "error",
       message: "This is an error message",
@@ -56,7 +56,7 @@ describe("customFormatter", () => {
     expect(result).toBe(expected);
   });
 
-  it("should include additional data in the formatted message", () => {
+  it("will include additional data in the formatted message", () => {
     const input: FormatterInput = {
       level: "info",
       message: "Message with additional data",
