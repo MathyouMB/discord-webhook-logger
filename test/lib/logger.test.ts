@@ -1,6 +1,5 @@
-import { defaultFormatter } from "../lib/formatters";
-import { defaultLevelsConfiguration } from "../lib/log-level-configuration";
-import { DiscordWebhookLogger } from "../lib/logger";
+import { defaultFormatter } from "../../src/lib/formatters";
+import { DiscordWebhookLogger } from "../../src/lib/logger";
 import { jest } from "@jest/globals";
 
 const mockWebhookUrls = [
@@ -35,84 +34,28 @@ describe("DiscordWebhookLogger", () => {
         ).toThrow(`Invalid Discord webhook URL: ${invalidWebhookUrls[0]}`);
       });
     });
-
-    describe("levels", () => {
-      it("will use default levels configuration if none is provided", () => {
-        const logger = new DiscordWebhookLogger({
-          webhookUrls: mockWebhookUrls,
-        });
-
-        expect((logger as any).levels).toEqual(
-          expect.objectContaining({
-            error: expect.any(Object),
-            warn: expect.any(Object),
-            info: expect.any(Object),
-            http: expect.any(Object),
-            verbose: expect.any(Object),
-            debug: expect.any(Object),
-            silly: expect.any(Object),
-          }),
-        );
-      });
-
-      it("will merge custom levels configuration with default", () => {
-        const customLevels = {
-          custom: { level: 7, color: "white", label: "CUSTOM" },
-        };
-        const logger = new DiscordWebhookLogger({
-          webhookUrls: mockWebhookUrls,
-          levels: customLevels,
-        });
-
-        expect((logger as any).levels).toEqual(
-          expect.objectContaining({
-            ...customLevels,
-            error: expect.any(Object),
-            warn: expect.any(Object),
-            info: expect.any(Object),
-            http: expect.any(Object),
-            verbose: expect.any(Object),
-            debug: expect.any(Object),
-            silly: expect.any(Object),
-          }),
-        );
-      });
-
-      it("will override default levels configuration with custom", () => {
-        const customLevels = {
-          error: { level: 7, color: "white", label: "CUSTOM" },
-        };
-        const logger = new DiscordWebhookLogger({
-          webhookUrls: mockWebhookUrls,
-          levels: customLevels,
-        });
-
-        expect((logger as any).levels["error"]).toEqual(customLevels["error"]);
-      });
-    });
   });
 
   describe("log", () => {
-    it("will throw an error if an unknown level is logged", () => {
-      const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
-
-      expect(() => logger.log("unknown", "This is a test message")).toThrow(
-        "Unknown level: unknown",
-      );
-    });
-
     it("will send messages to all webhook URLs", async () => {
+      const mockLevel = "info";
       const mockMessage = "This is an info message";
       const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
       const sendWebhookMessageSpy = jest
         .spyOn(logger as any, "sendWebhookMessage")
         .mockImplementation(async () => {});
 
-      logger.log("info", mockMessage);
+      logger.log({
+        level: mockLevel,
+        message: mockMessage,
+      });
 
       expect(sendWebhookMessageSpy).toHaveBeenCalledWith(
         mockWebhookUrls[0],
-        defaultFormatter(defaultLevelsConfiguration.info, mockMessage),
+        defaultFormatter({
+          level: mockLevel,
+          message: mockMessage,
+        }),
       );
     });
 
@@ -127,7 +70,10 @@ describe("DiscordWebhookLogger", () => {
         .spyOn(logger as any, "sendWebhookMessage")
         .mockImplementation(async () => {});
 
-      logger.log("info", mockMessage);
+      logger.log({
+        level: "info",
+        message: mockMessage,
+      });
 
       expect(sendWebhookMessageSpy).toHaveBeenCalledWith(
         mockWebhookUrls[0],
@@ -143,37 +89,55 @@ describe("DiscordWebhookLogger", () => {
     it("will send error log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.error(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("error", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "error",
+        message: mockMessage,
+      });
     });
 
     it("will send warn log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.warn(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("warn", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "warn",
+        message: mockMessage,
+      });
     });
 
     it("will send info log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.info(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("info", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "info",
+        message: mockMessage,
+      });
     });
 
     it("will send http log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.http(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("http", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "http",
+        message: mockMessage,
+      });
     });
 
     it("will send verbose log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.verbose(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("verbose", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "verbose",
+        message: mockMessage,
+      });
     });
 
     it("will send debug log", () => {
       const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.debug(mockMessage);
-      expect(logSpy).toHaveBeenCalledWith("debug", mockMessage);
+      expect(logSpy).toHaveBeenCalledWith({
+        level: "debug",
+        message: mockMessage,
+      });
     });
   });
 });

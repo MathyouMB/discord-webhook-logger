@@ -1,22 +1,22 @@
-import { defaultFormatter } from "./formatters";
-import {
-  defaultLevelsConfiguration,
-  LogLevelConfiguration,
-} from "./log-level-configuration";
+import { defaultFormatter, FormatterInput } from "./formatters";
+
+interface LogMessage {
+  level: string;
+  message: string;
+  discordTargetId?: string;
+  additionalData?: any;
+}
 
 export class DiscordWebhookLogger {
   private webhookUrls: string[];
-  private levels: Record<string, LogLevelConfiguration>;
-  private formatter: (level: LogLevelConfiguration, message: string) => string;
+  private formatter: (input: FormatterInput) => string;
 
   constructor({
     webhookUrls,
-    levels,
     format,
   }: {
     webhookUrls: string[];
-    levels?: Record<string, LogLevelConfiguration>;
-    format?: (level: LogLevelConfiguration, message: string) => string;
+    format?: (input: FormatterInput) => string;
   }) {
     this.webhookUrls = webhookUrls;
     this.webhookUrls.forEach((url) => {
@@ -24,17 +24,21 @@ export class DiscordWebhookLogger {
         throw new Error(`Invalid Discord webhook URL: ${url}`);
       }
     });
-    this.levels = { ...defaultLevelsConfiguration, ...levels };
     this.formatter = format || defaultFormatter;
   }
 
-  public log(level: string, message: string): void {
-    const levelConfiguration = this.levels[level];
-    if (!levelConfiguration) {
-      throw new Error(`Unknown level: ${level}`);
-    }
-
-    const formattedMessage = this.formatter(levelConfiguration, message);
+  public log({
+    level,
+    message,
+    discordTargetId,
+    additionalData,
+  }: LogMessage): void {
+    const formattedMessage = this.formatter({
+      level,
+      message,
+      discordTargetId,
+      additionalData,
+    });
 
     this.webhookUrls.forEach(async (webhookUrl) => {
       await this.sendWebhookMessage(webhookUrl, formattedMessage);
@@ -42,31 +46,52 @@ export class DiscordWebhookLogger {
   }
 
   public error(message: string): void {
-    this.log("error", message);
+    this.log({
+      level: "error",
+      message,
+    });
   }
 
   public warn(message: string): void {
-    this.log("warn", message);
+    this.log({
+      level: "warn",
+      message,
+    });
   }
 
   public info(message: string): void {
-    this.log("info", message);
+    this.log({
+      level: "info",
+      message,
+    });
   }
 
   public http(message: string): void {
-    this.log("http", message);
+    this.log({
+      level: "http",
+      message,
+    });
   }
 
   public verbose(message: string): void {
-    this.log("verbose", message);
+    this.log({
+      level: "verbose",
+      message,
+    });
   }
 
   public debug(message: string): void {
-    this.log("debug", message);
+    this.log({
+      level: "debug",
+      message,
+    });
   }
 
   public silly(message: string): void {
-    this.log("silly", message);
+    this.log({
+      level: "silly",
+      message,
+    });
   }
 
   private async sendWebhookMessage(

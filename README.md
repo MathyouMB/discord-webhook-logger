@@ -2,11 +2,9 @@
 
 `DiscordWebhookLogger` is a TypeScript class for sending structured log messages to Discord via webhooks. It supports customizable log levels, message formatting, and multiple webhook URLs.
 
-
 ## Installation
 
 `npm i discord-webhook-logger`
-
 
 ## Usage
 
@@ -24,7 +22,6 @@ const logger = new DiscordWebhookLogger({
 logger.info("This is an info message!");
 logger.error("An error occurred!");
 ```
-
 
 ### Constructor
 
@@ -45,7 +42,6 @@ new DiscordWebhookLogger({
 - **`webhookUrls` (required)**: An array of Discord webhook URLs to send log messages to.
 - **`levels` (optional)**: A record defining custom log level configurations. Defaults to `defaultLevelsConfiguration`.
 - **`format` (optional)**: A function to format messages before sending. Defaults to `defaultFormatter`.
-
 
 ### Methods
 
@@ -71,7 +67,6 @@ logger.log("info", "This is a custom log message.");
 logger.error("An error occurred!");
 logger.debug("Debugging information.");
 ```
-
 
 ### Customization
 
@@ -116,11 +111,9 @@ logger.info("This message is formatted with a custom formatter!");
 - Node.js version 18 or higher.
 - Discord webhook URLs.
 
-
 ## License
 
 This code is provided under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute it as needed.
-
 
 ## Contribution
 
