@@ -1,10 +1,15 @@
 import { defaultFormatter } from "../lib/formatters";
 import { defaultLevelsConfiguration } from "../lib/log-level-configuration";
 import { DiscordLogger } from "../lib/logger";
+import { jest } from "@jest/globals";
 
 const mockWebhookUrls = [
   "https://discord.com/api/webhooks/1234567890/ABCDEFGHIJKLMN1234567890",
 ];
+
+jest
+  .spyOn(DiscordLogger.prototype as any, "sendWebhookMessage")
+  .mockImplementation(async () => {});
 
 describe("DiscordLogger", () => {
   describe("initialization", () => {

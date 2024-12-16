@@ -73,7 +73,19 @@ export class DiscordLogger {
     webhookUrl: string,
     message: string,
   ): Promise<void> {
-    console.log(`Sending message to ${webhookUrl}: ${message}`);
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: message }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to send message to Discord webhook: ${response.statusText}`,
+      );
+    }
   }
 
   private validDiscordWebhookUrl(url: string): boolean {
