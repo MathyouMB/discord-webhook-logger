@@ -15,12 +15,16 @@ describe("DiscordWebhookLogger", () => {
   describe("initialization", () => {
     describe("webhookUrls", () => {
       it("will initialize with given webhookUrls", () => {
-        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
+        const logger = new DiscordWebhookLogger({
+          webhookUrls: mockWebhookUrls,
+        });
         expect(logger).toBeInstanceOf(DiscordWebhookLogger);
       });
 
       it("will store the webhookUrls correctly", () => {
-        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
+        const logger = new DiscordWebhookLogger({
+          webhookUrls: mockWebhookUrls,
+        });
         expect((logger as any).webhookUrls).toEqual(mockWebhookUrls);
       });
 
@@ -34,7 +38,9 @@ describe("DiscordWebhookLogger", () => {
 
     describe("levels", () => {
       it("will use default levels configuration if none is provided", () => {
-        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
+        const logger = new DiscordWebhookLogger({
+          webhookUrls: mockWebhookUrls,
+        });
 
         expect((logger as any).levels).toEqual(
           expect.objectContaining({

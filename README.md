@@ -6,18 +6,21 @@
 
 ## Installation
 
-```npm i discord-webhook-logger```
+`npm i discord-webhook-logger`
 
 ---
 
 ## Usage
 
 ### Basic Usage
+
 ```typescript
 import { DiscordWebhookLogger } from "./DiscordWebhookLogger";
 
 const logger = new DiscordWebhookLogger({
-  webhookUrls: ["https://discord.com/api/webhooks/your-webhook-id/your-webhook-token"],
+  webhookUrls: [
+    "https://discord.com/api/webhooks/your-webhook-id/your-webhook-token",
+  ],
 });
 
 logger.info("This is an info message!");
@@ -41,6 +44,7 @@ new DiscordWebhookLogger({
 ```
 
 #### Parameters
+
 - **`webhookUrls` (required)**: An array of Discord webhook URLs to send log messages to.
 - **`levels` (optional)**: A record defining custom log level configurations. Defaults to `defaultLevelsConfiguration`.
 - **`format` (optional)**: A function to format messages before sending. Defaults to `defaultFormatter`.
@@ -50,6 +54,7 @@ new DiscordWebhookLogger({
 ### Methods
 
 #### `log(level: string, message: string): void`
+
 Logs a message with the specified log level.
 
 ```typescript
@@ -57,6 +62,7 @@ logger.log("info", "This is a custom log message.");
 ```
 
 #### Common Log Levels
+
 - `error(message: string): void`
 - `warn(message: string): void`
 - `info(message: string): void`
@@ -75,6 +81,7 @@ logger.debug("Debugging information.");
 ### Customization
 
 #### Custom Log Levels
+
 You can define custom log levels by providing a `levels` configuration.
 
 ```typescript
@@ -83,7 +90,9 @@ const customLevels = {
 };
 
 const logger = new DiscordWebhookLogger({
-  webhookUrls: ["https://discord.com/api/webhooks/your-webhook-id/your-webhook-token"],
+  webhookUrls: [
+    "https://discord.com/api/webhooks/your-webhook-id/your-webhook-token",
+  ],
   levels: customLevels,
 });
 
@@ -91,13 +100,16 @@ logger.log("customLevel", "A custom level log message!");
 ```
 
 #### Custom Message Formatting
+
 Provide a custom formatter function to control how messages are formatted.
 
 ```typescript
 const customFormatter = (level, message) => `[${level.priority}] ${message}`;
 
 const logger = new DiscordWebhookLogger({
-  webhookUrls: ["https://discord.com/api/webhooks/your-webhook-id/your-webhook-token"],
+  webhookUrls: [
+    "https://discord.com/api/webhooks/your-webhook-id/your-webhook-token",
+  ],
   format: customFormatter,
 });
 
