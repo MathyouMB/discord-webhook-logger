@@ -1,3 +1,5 @@
+import { defaultFormatter } from "../lib/formatters";
+import { defaultLevelsConfiguration } from "../lib/log-level-configuration";
 import { DiscordLogger } from "../lib/logger";
 
 const mockWebhookUrls = [
@@ -7,17 +9,17 @@ const mockWebhookUrls = [
 describe("DiscordLogger", () => {
   describe("initialization", () => {
     describe("webhookUrls", () => {
-      test("will initialize with given webhookUrls", () => {
+      it("will initialize with given webhookUrls", () => {
         const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
         expect(logger).toBeInstanceOf(DiscordLogger);
       });
 
-      test("will store the webhookUrls correctly", () => {
+      it("will store the webhookUrls correctly", () => {
         const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
         expect((logger as any).webhookUrls).toEqual(mockWebhookUrls);
       });
 
-      test("will throw an error if an invalid webhook URL is provided", () => {
+      it("will throw an error if an invalid webhook URL is provided", () => {
         const invalidWebhookUrls = ["https://example.com/webhooks"];
         expect(
           () => new DiscordLogger({ webhookUrls: invalidWebhookUrls }),
@@ -26,7 +28,7 @@ describe("DiscordLogger", () => {
     });
 
     describe("levels", () => {
-      test("will use default levels configuration if none is provided", () => {
+      it("will use default levels configuration if none is provided", () => {
         const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
 
         expect((logger as any).levels).toEqual(
@@ -42,9 +44,9 @@ describe("DiscordLogger", () => {
         );
       });
 
-      test("will merge custom levels configuration with default", () => {
+      it("will merge custom levels configuration with default", () => {
         const customLevels = {
-          custom: { level: 7, color: "white" },
+          custom: { level: 7, color: "white", label: "CUSTOM" },
         };
         const logger = new DiscordLogger({
           webhookUrls: mockWebhookUrls,
@@ -65,9 +67,9 @@ describe("DiscordLogger", () => {
         );
       });
 
-      test("will override default levels configuration with custom", () => {
+      it("will override default levels configuration with custom", () => {
         const customLevels = {
-          error: { level: 7, color: "white" },
+          error: { level: 7, color: "white", label: "CUSTOM" },
         };
         const logger = new DiscordLogger({
           webhookUrls: mockWebhookUrls,
@@ -80,7 +82,7 @@ describe("DiscordLogger", () => {
   });
 
   describe("log", () => {
-    test("will throw an error if an unknown level is logged", () => {
+    it("will throw an error if an unknown level is logged", () => {
       const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
 
       expect(() => logger.log("unknown", "This is a test message")).toThrow(
@@ -88,18 +90,7 @@ describe("DiscordLogger", () => {
       );
     });
 
-    test("will log messages with the correct color", () => {
-      const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
-      console.log = jest.fn();
-
-      logger.log("info", "This is an info message");
-
-      expect(console.log).toHaveBeenCalledWith(
-        "\x1b[1m\x1b[3blueminfo\x1b[0m: This is an info message",
-      );
-    });
-
-    test("will send messages to all webhook URLs", async () => {
+    it("will send messages to all webhook URLs", async () => {
       const mockMessage = "This is an info message";
       const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
       const sendWebhookMessageSpy = jest
@@ -110,7 +101,26 @@ describe("DiscordLogger", () => {
 
       expect(sendWebhookMessageSpy).toHaveBeenCalledWith(
         mockWebhookUrls[0],
-        mockMessage,
+        defaultFormatter(defaultLevelsConfiguration.info, mockMessage),
+      );
+    });
+
+    it("will format message with custom formatter", async () => {
+      const mockMessage = "This is an info message";
+      const customFormatter = jest.fn(() => "Custom formatted message");
+      const logger = new DiscordLogger({
+        webhookUrls: mockWebhookUrls,
+        format: customFormatter,
+      });
+      const sendWebhookMessageSpy = jest
+        .spyOn(logger as any, "sendWebhookMessage")
+        .mockImplementation(async () => {});
+
+      logger.log("info", mockMessage);
+
+      expect(sendWebhookMessageSpy).toHaveBeenCalledWith(
+        mockWebhookUrls[0],
+        "Custom formatted message",
       );
     });
   });
@@ -119,37 +129,37 @@ describe("DiscordLogger", () => {
     const mockMessage = "This is a test message";
     const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
 
-    test("will send error log", () => {
+    it("will send error log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.error(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("error", mockMessage);
     });
 
-    test("will send warn log", () => {
+    it("will send warn log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.warn(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("warn", mockMessage);
     });
 
-    test("will send info log", () => {
+    it("will send info log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.info(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("info", mockMessage);
     });
 
-    test("will send http log", () => {
+    it("will send http log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.http(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("http", mockMessage);
     });
 
-    test("will send verbose log", () => {
+    it("will send verbose log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.verbose(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("verbose", mockMessage);
     });
 
-    test("will send debug log", () => {
+    it("will send debug log", () => {
       const logSpy = jest.spyOn(logger as DiscordLogger, "log");
       logger.debug(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("debug", mockMessage);

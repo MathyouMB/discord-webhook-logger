@@ -1,3 +1,4 @@
+import { defaultFormatter } from "./formatters";
 import {
   defaultLevelsConfiguration,
   LogLevelConfiguration,
@@ -6,13 +7,16 @@ import {
 export class DiscordLogger {
   private webhookUrls: string[];
   private levels: Record<string, LogLevelConfiguration>;
+  private formatter: (level: LogLevelConfiguration, message: string) => string;
 
   constructor({
     webhookUrls,
     levels,
+    format,
   }: {
     webhookUrls: string[];
     levels?: Record<string, LogLevelConfiguration>;
+    format?: (level: LogLevelConfiguration, message: string) => string;
   }) {
     this.webhookUrls = webhookUrls;
     this.webhookUrls.forEach((url) => {
@@ -21,6 +25,7 @@ export class DiscordLogger {
       }
     });
     this.levels = { ...defaultLevelsConfiguration, ...levels };
+    this.formatter = format || defaultFormatter;
   }
 
   public log(level: string, message: string): void {
@@ -29,11 +34,10 @@ export class DiscordLogger {
       throw new Error(`Unknown level: ${level}`);
     }
 
-    const color = levelConfiguration.color;
-    console.log(`\x1b[1m\x1b[3${color}m${level}\x1b[0m: ${message}`);
+    const formattedMessage = this.formatter(levelConfiguration, message);
 
     this.webhookUrls.forEach(async (webhookUrl) => {
-      await this.sendWebhookMessage(webhookUrl, message);
+      await this.sendWebhookMessage(webhookUrl, formattedMessage);
     });
   }
 
