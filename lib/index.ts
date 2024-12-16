@@ -1,1 +1,1 @@
-export { DiscordLogger } from "./logger";
+export { DiscordWebhookLogger } from "./logger";

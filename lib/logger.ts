@@ -4,7 +4,7 @@ import {
   LogLevelConfiguration,
 } from "./log-level-configuration";
 
-export class DiscordLogger {
+export class DiscordWebhookLogger {
   private webhookUrls: string[];
   private levels: Record<string, LogLevelConfiguration>;
   private formatter: (level: LogLevelConfiguration, message: string) => string;

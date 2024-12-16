@@ -1,6 +1,6 @@
 import { defaultFormatter } from "../lib/formatters";
 import { defaultLevelsConfiguration } from "../lib/log-level-configuration";
-import { DiscordLogger } from "../lib/logger";
+import { DiscordWebhookLogger } from "../lib/logger";
 import { jest } from "@jest/globals";
 
 const mockWebhookUrls = [
@@ -8,33 +8,33 @@ const mockWebhookUrls = [
 ];
 
 jest
-  .spyOn(DiscordLogger.prototype as any, "sendWebhookMessage")
+  .spyOn(DiscordWebhookLogger.prototype as any, "sendWebhookMessage")
   .mockImplementation(async () => {});
 
-describe("DiscordLogger", () => {
+describe("DiscordWebhookLogger", () => {
   describe("initialization", () => {
     describe("webhookUrls", () => {
       it("will initialize with given webhookUrls", () => {
-        const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
-        expect(logger).toBeInstanceOf(DiscordLogger);
+        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
+        expect(logger).toBeInstanceOf(DiscordWebhookLogger);
       });
 
       it("will store the webhookUrls correctly", () => {
-        const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
+        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
         expect((logger as any).webhookUrls).toEqual(mockWebhookUrls);
       });
 
       it("will throw an error if an invalid webhook URL is provided", () => {
         const invalidWebhookUrls = ["https://example.com/webhooks"];
         expect(
-          () => new DiscordLogger({ webhookUrls: invalidWebhookUrls }),
+          () => new DiscordWebhookLogger({ webhookUrls: invalidWebhookUrls }),
         ).toThrow(`Invalid Discord webhook URL: ${invalidWebhookUrls[0]}`);
       });
     });
 
     describe("levels", () => {
       it("will use default levels configuration if none is provided", () => {
-        const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
+        const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
 
         expect((logger as any).levels).toEqual(
           expect.objectContaining({
@@ -53,7 +53,7 @@ describe("DiscordLogger", () => {
         const customLevels = {
           custom: { level: 7, color: "white", label: "CUSTOM" },
         };
-        const logger = new DiscordLogger({
+        const logger = new DiscordWebhookLogger({
           webhookUrls: mockWebhookUrls,
           levels: customLevels,
         });
@@ -76,7 +76,7 @@ describe("DiscordLogger", () => {
         const customLevels = {
           error: { level: 7, color: "white", label: "CUSTOM" },
         };
-        const logger = new DiscordLogger({
+        const logger = new DiscordWebhookLogger({
           webhookUrls: mockWebhookUrls,
           levels: customLevels,
         });
@@ -88,7 +88,7 @@ describe("DiscordLogger", () => {
 
   describe("log", () => {
     it("will throw an error if an unknown level is logged", () => {
-      const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
+      const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
 
       expect(() => logger.log("unknown", "This is a test message")).toThrow(
         "Unknown level: unknown",
@@ -97,7 +97,7 @@ describe("DiscordLogger", () => {
 
     it("will send messages to all webhook URLs", async () => {
       const mockMessage = "This is an info message";
-      const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
+      const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
       const sendWebhookMessageSpy = jest
         .spyOn(logger as any, "sendWebhookMessage")
         .mockImplementation(async () => {});
@@ -113,7 +113,7 @@ describe("DiscordLogger", () => {
     it("will format message with custom formatter", async () => {
       const mockMessage = "This is an info message";
       const customFormatter = jest.fn(() => "Custom formatted message");
-      const logger = new DiscordLogger({
+      const logger = new DiscordWebhookLogger({
         webhookUrls: mockWebhookUrls,
         format: customFormatter,
       });
@@ -132,40 +132,40 @@ describe("DiscordLogger", () => {
 
   describe("log helper methods", () => {
     const mockMessage = "This is a test message";
-    const logger = new DiscordLogger({ webhookUrls: mockWebhookUrls });
+    const logger = new DiscordWebhookLogger({ webhookUrls: mockWebhookUrls });
 
     it("will send error log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.error(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("error", mockMessage);
     });
 
     it("will send warn log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.warn(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("warn", mockMessage);
     });
 
     it("will send info log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.info(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("info", mockMessage);
     });
 
     it("will send http log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.http(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("http", mockMessage);
     });
 
     it("will send verbose log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.verbose(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("verbose", mockMessage);
     });
 
     it("will send debug log", () => {
-      const logSpy = jest.spyOn(logger as DiscordLogger, "log");
+      const logSpy = jest.spyOn(logger as DiscordWebhookLogger, "log");
       logger.debug(mockMessage);
       expect(logSpy).toHaveBeenCalledWith("debug", mockMessage);
     });
